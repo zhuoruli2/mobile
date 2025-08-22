@@ -118,7 +118,9 @@ const ArticleDetailScreen = ({ route, navigation }) => {
         <Text style={styles.title}>{article.title}</Text>
         
         <View style={styles.meta}>
-          <Text style={styles.source}>{article.source}</Text>
+          <Text style={styles.source}>
+            {typeof article.source === 'object' ? article.source.displayName || article.source.name : article.source}
+          </Text>
           <Text style={styles.date}>
             {moment(article.publishedAt).format('MMMM DD, YYYY')}
           </Text>

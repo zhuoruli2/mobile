@@ -128,7 +128,7 @@ const HomeScreen = ({ navigation }) => {
       <FlatList
         data={articles}
         renderItem={renderArticle}
-        keyExtractor={(item) => item.id || item._id}
+        keyExtractor={(item) => `${item.source || 'unknown'}-${item.id || item._id}`}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }

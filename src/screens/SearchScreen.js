@@ -196,7 +196,7 @@ const SearchScreen = ({ navigation }) => {
       <FlatList
         data={searchResults}
         renderItem={renderSearchResult}
-        keyExtractor={(item) => item.id || item._id}
+        keyExtractor={(item) => `${item.source || 'unknown'}-${item.id || item._id}`}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.5}
         ListEmptyComponent={renderEmpty}
