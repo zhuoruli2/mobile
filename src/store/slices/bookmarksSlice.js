@@ -30,14 +30,14 @@ const bookmarksSlice = createSlice({
   name: 'bookmarks',
   initialState: {
     bookmarks: [],
-    bookmarkedIds: new Set(),
+    bookmarkedIds: [],
     loading: false,
     error: null,
   },
   reducers: {
     clearBookmarks: (state) => {
       state.bookmarks = [];
-      state.bookmarkedIds = new Set();
+      state.bookmarkedIds = [];
     },
   },
   extraReducers: (builder) => {
@@ -50,7 +50,7 @@ const bookmarksSlice = createSlice({
       .addCase(fetchBookmarks.fulfilled, (state, action) => {
         state.loading = false;
         state.bookmarks = action.payload;
-        state.bookmarkedIds = new Set(action.payload.map(b => b.id));
+        state.bookmarkedIds = action.payload.map(b => b.id);
       })
       .addCase(fetchBookmarks.rejected, (state, action) => {
         state.loading = false;
@@ -65,8 +65,9 @@ const bookmarksSlice = createSlice({
       })
       .addCase(addBookmark.fulfilled, (state, action) => {
         state.loading = false;
-        state.bookmarkedIds.add(action.payload.articleId);
-        // Optionally add the full article to bookmarks array
+        if (!state.bookmarkedIds.includes(action.payload.articleId)) {
+          state.bookmarkedIds.push(action.payload.articleId);
+        }
       })
       .addCase(addBookmark.rejected, (state, action) => {
         state.loading = false;
@@ -81,7 +82,7 @@ const bookmarksSlice = createSlice({
       })
       .addCase(removeBookmark.fulfilled, (state, action) => {
         state.loading = false;
-        state.bookmarkedIds.delete(action.payload);
+        state.bookmarkedIds = state.bookmarkedIds.filter(id => id !== action.payload);
         state.bookmarks = state.bookmarks.filter(b => b.id !== action.payload);
       })
       .addCase(removeBookmark.rejected, (state, action) => {

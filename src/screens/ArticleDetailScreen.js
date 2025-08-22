@@ -22,7 +22,7 @@ const ArticleDetailScreen = ({ route, navigation }) => {
   const [webViewLoading, setWebViewLoading] = useState(true);
   
   const bookmarkedIds = useSelector((state) => state.bookmarks.bookmarkedIds);
-  const isBookmarked = bookmarkedIds.has(article.id || article._id);
+  const isBookmarked = bookmarkedIds.includes(article.id || article._id);
 
   const handleBookmark = useCallback(async () => {
     try {

@@ -1,6 +1,6 @@
 // API Configuration
 export const API_BASE_URL = __DEV__ 
-  ? 'http://localhost:3000/api'  // Development API
+  ? 'http://10.0.2.2:3000/api'  // Development API for Android emulator (10.0.2.2 maps to localhost)
   : 'https://your-production-api.com/api'; // Production API
 
 export const API_ENDPOINTS = {
