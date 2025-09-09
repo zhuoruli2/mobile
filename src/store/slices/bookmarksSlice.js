@@ -1,30 +1,39 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import articleService from '../../services/articleService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const STORAGE_KEY = '@carnews/bookmarks';
 
 // Async thunks
-export const fetchBookmarks = createAsyncThunk(
-  'bookmarks/fetchBookmarks',
-  async () => {
-    const response = await articleService.getBookmarks();
-    return response;
-  }
-);
+export const fetchBookmarks = createAsyncThunk('bookmarks/fetchBookmarks', async () => {
+  const raw = await AsyncStorage.getItem(STORAGE_KEY);
+  const parsed = raw ? JSON.parse(raw) : { bookmarks: [] };
+  return parsed.bookmarks;
+});
 
 export const addBookmark = createAsyncThunk(
   'bookmarks/addBookmark',
-  async (articleId) => {
-    const response = await articleService.addBookmark(articleId);
-    return { articleId, ...response };
+  async (article, { getState }) => {
+    const state = getState();
+    const raw = await AsyncStorage.getItem(STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : { bookmarks: [] };
+
+    // Avoid duplicates by id
+    const id = article.id || article._id;
+    if (!parsed.bookmarks.find((b) => (b.id || b._id) === id)) {
+      parsed.bookmarks.unshift(article);
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+    }
+    return { article };
   }
 );
 
-export const removeBookmark = createAsyncThunk(
-  'bookmarks/removeBookmark',
-  async (articleId) => {
-    await articleService.removeBookmark(articleId);
-    return articleId;
-  }
-);
+export const removeBookmark = createAsyncThunk('bookmarks/removeBookmark', async (articleId) => {
+  const raw = await AsyncStorage.getItem(STORAGE_KEY);
+  const parsed = raw ? JSON.parse(raw) : { bookmarks: [] };
+  parsed.bookmarks = parsed.bookmarks.filter((b) => (b.id || b._id) !== articleId);
+  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+  return articleId;
+});
 
 const bookmarksSlice = createSlice({
   name: 'bookmarks',
@@ -50,7 +59,7 @@ const bookmarksSlice = createSlice({
       .addCase(fetchBookmarks.fulfilled, (state, action) => {
         state.loading = false;
         state.bookmarks = action.payload;
-        state.bookmarkedIds = action.payload.map(b => b.id);
+        state.bookmarkedIds = action.payload.map((b) => b.id || b._id);
       })
       .addCase(fetchBookmarks.rejected, (state, action) => {
         state.loading = false;
@@ -65,8 +74,10 @@ const bookmarksSlice = createSlice({
       })
       .addCase(addBookmark.fulfilled, (state, action) => {
         state.loading = false;
-        if (!state.bookmarkedIds.includes(action.payload.articleId)) {
-          state.bookmarkedIds.push(action.payload.articleId);
+        const id = action.payload.article.id || action.payload.article._id;
+        if (!state.bookmarkedIds.includes(id)) {
+          state.bookmarkedIds.push(id);
+          state.bookmarks.unshift(action.payload.article);
         }
       })
       .addCase(addBookmark.rejected, (state, action) => {

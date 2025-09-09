@@ -29,7 +29,7 @@ const ArticleDetailScreen = ({ route, navigation }) => {
       if (isBookmarked) {
         await dispatch(removeBookmark(article.id || article._id)).unwrap();
       } else {
-        await dispatch(addBookmark(article.id || article._id)).unwrap();
+        await dispatch(addBookmark(article)).unwrap();
       }
     } catch (error) {
       console.error('Error toggling bookmark:', error);
