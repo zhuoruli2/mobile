@@ -7,6 +7,7 @@ import { Text } from 'react-native';
 // Screens
 import HomeScreen from '../screens/HomeScreen';
 import SearchScreen from '../screens/SearchScreen';
+import BookmarksScreen from '../screens/BookmarksScreen';
 import ArticleDetailScreen from '../screens/ArticleDetailScreen';
 
 const Stack = createStackNavigator();
@@ -88,7 +89,7 @@ const TabNavigator = () => {
       />
       <Tab.Screen 
         name="Bookmarks" 
-        component={BookmarksPlaceholder}
+        component={BookmarksScreen}
         options={{
           title: 'Bookmarks',
           headerStyle: {
@@ -111,11 +112,7 @@ const CategoriesPlaceholder = () => (
   </Text>
 );
 
-const BookmarksPlaceholder = () => (
-  <Text style={{ flex: 1, textAlign: 'center', marginTop: 50 }}>
-    Bookmarks Screen - Coming Soon
-  </Text>
-);
+// (Bookmarks replaced with real screen)
 
 // Main Stack Navigator
 const AppNavigator = () => {
