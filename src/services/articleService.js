@@ -1,5 +1,6 @@
 import apiClient from './apiService';
 import { API_ENDPOINTS } from '../config/api';
+import { getClientId } from '../utils/clientId';
 
 const articleService = {
   // Get all articles with pagination
@@ -62,7 +63,12 @@ const articleService = {
   // Add bookmark
   addBookmark: async (articleId) => {
     try {
-      const response = await apiClient.post(API_ENDPOINTS.ADD_BOOKMARK(articleId));
+      const clientId = await getClientId();
+      const response = await apiClient.post(
+        API_ENDPOINTS.ADD_BOOKMARK(articleId),
+        {},
+        { params: { clientId } }
+      );
       return response;
     } catch (error) {
       throw error;
@@ -72,7 +78,11 @@ const articleService = {
   // Remove bookmark
   removeBookmark: async (articleId) => {
     try {
-      const response = await apiClient.delete(API_ENDPOINTS.REMOVE_BOOKMARK(articleId));
+      const clientId = await getClientId();
+      const response = await apiClient.delete(
+        API_ENDPOINTS.REMOVE_BOOKMARK(articleId),
+        { params: { clientId } }
+      );
       return response;
     } catch (error) {
       throw error;
@@ -82,8 +92,12 @@ const articleService = {
   // Get user bookmarks
   getBookmarks: async () => {
     try {
-      const response = await apiClient.get(API_ENDPOINTS.GET_BOOKMARKS);
-      return response;
+      const clientId = await getClientId();
+      const response = await apiClient.get(API_ENDPOINTS.GET_BOOKMARKS, {
+        params: { clientId },
+      });
+      // Normalize: return array of articles
+      return response.data || response;
     } catch (error) {
       throw error;
     }

@@ -12,15 +12,11 @@ export const API_ENDPOINTS = {
   
   // Sources
   GET_SOURCES: '/sources',
-  
-  // Auth
-  LOGIN: '/auth/login',
-  REGISTER: '/auth/register',
-  
-  // User
-  GET_BOOKMARKS: '/user/bookmarks',
-  ADD_BOOKMARK: (articleId) => `/user/bookmarks/${articleId}`,
-  REMOVE_BOOKMARK: (articleId) => `/user/bookmarks/${articleId}`,
+
+  // Anonymous bookmarks (clientId)
+  GET_BOOKMARKS: '/bookmarks',
+  ADD_BOOKMARK: (articleId) => `/bookmarks/${articleId}`,
+  REMOVE_BOOKMARK: (articleId) => `/bookmarks/${articleId}`,
 };
 
 export const REQUEST_TIMEOUT = 30000; // 30 seconds

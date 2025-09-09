@@ -1,37 +1,22 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const STORAGE_KEY = '@carnews/bookmarks';
+import articleService from '../../services/articleService';
 
 // Async thunks
 export const fetchBookmarks = createAsyncThunk('bookmarks/fetchBookmarks', async () => {
-  const raw = await AsyncStorage.getItem(STORAGE_KEY);
-  const parsed = raw ? JSON.parse(raw) : { bookmarks: [] };
-  return parsed.bookmarks;
+  const articles = await articleService.getBookmarks();
+  return articles;
 });
 
 export const addBookmark = createAsyncThunk(
   'bookmarks/addBookmark',
-  async (article, { getState }) => {
-    const state = getState();
-    const raw = await AsyncStorage.getItem(STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : { bookmarks: [] };
-
-    // Avoid duplicates by id
-    const id = article.id || article._id;
-    if (!parsed.bookmarks.find((b) => (b.id || b._id) === id)) {
-      parsed.bookmarks.unshift(article);
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
-    }
+  async (article) => {
+    await articleService.addBookmark(article.id || article._id);
     return { article };
   }
 );
 
 export const removeBookmark = createAsyncThunk('bookmarks/removeBookmark', async (articleId) => {
-  const raw = await AsyncStorage.getItem(STORAGE_KEY);
-  const parsed = raw ? JSON.parse(raw) : { bookmarks: [] };
-  parsed.bookmarks = parsed.bookmarks.filter((b) => (b.id || b._id) !== articleId);
-  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+  await articleService.removeBookmark(articleId);
   return articleId;
 });
 
